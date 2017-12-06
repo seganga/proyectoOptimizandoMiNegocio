@@ -1,0 +1,57 @@
+!@encoding CP1252
+model "OptimizandoMiNegocio"
+uses "mmxprs"; !gain access to the Xpress-Optimizer solver
+
+declarations
+INDICES = 1..7
+BENEFICIOS: array(INDICES) of real
+VARIABLES: array(INDICES) of MPVAR
+
+QUESO:array(INDICES) of real !array queso
+JAMON:array(INDICES) of real !array jamon
+PERNIL:array(INDICES) of real !array pernil
+ARROLLADO:array(INDICES) of real !array arrollado
+SALCHICHON:array(INDICES) of real !array salchichon
+PALTA:array(INDICES) of real !array palta
+AVE:array(INDICES) of real !array ave
+end-declarations
+
+!Array
+BENEFICIOS:: [700,700,1100,900,700,700,900]
+QUESO::[50,0,0,0,0,0,0]
+JAMON::[0,50,0,0,0,0,0]
+PERNIL::[0,0,100,0,0,0,0]
+ARROLLADO::[0,0,0,75,0,0,0]
+SALCHICHON::[0,0,0,0,50,0,0]
+PALTA::[0,0,0,0,0,50,0]
+AVE::[0,0,0,0,0,0,100]
+
+
+!Funcion objetivo
+Return:=sum(s in INDICES) BENEFICIOS(s)*VARIABLES(s)
+
+!Restrincciones
+!Uso de Producto
+sum(s in INDICES) QUESO(s)*VARIABLES(s) <=500
+sum(s in INDICES) JAMON(s)*VARIABLES(s) <=500
+sum(s in INDICES) PERNIL(s)*VARIABLES(s) <=2000
+sum(s in INDICES) ARROLLADO(s)*VARIABLES(s) <=500
+sum(s in INDICES) SALCHICHON(s)*VARIABLES(s) <=500
+sum(s in INDICES) PALTA(s)*VARIABLES(s) <=2400
+sum(s in INDICES) AVE(s)*VARIABLES(s) <=4000
+
+!Stock de pan
+sum(s in INDICES) VARIABLES(s) <= 100
+
+
+forall(s in INDICES) DO
+VARIABLES(s) is_integer
+end-do
+
+maximize(Return)
+
+writeln("Total return: ",getobjval)
+forall(s in INDICES) writeln(s,": ", getsol(VARIABLES(s)))
+
+end-model
+
